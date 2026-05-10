@@ -1,10 +1,20 @@
-const CACHE_NAME = 'maengelmelder-heimburg-v4';
-const urlsToCache = ['index.html', 'manifest.json', 'icon-192.png'];
+const CACHE_NAME = 'mangelmelder-heimburg-v5';
+const urlsToCache = [
+  'index.html',
+  'manifest.json',
+  'icon-192.png'
+];
 
 self.addEventListener('install', event => {
-  event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache)));
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then(cache => cache.addAll(urlsToCache))
+  );
 });
 
 self.addEventListener('fetch', event => {
-  event.respondWith(caches.match(event.request).then(response => response || fetch(event.request)));
+  event.respondWith(
+    caches.match(event.request)
+      .then(response => response || fetch(event.request))
+  );
 });
