@@ -78,14 +78,14 @@
         .modal-content {
             background: white; padding: 25px; border-radius: 20px; text-align: center; border: 4px solid var(--hb-yellow);
         }
-        .btn-go { background: var(--hb-red); color: white; padding: 12px; border: none; border-radius: 8px; width: 100%; font-weight: bold; margin-top: 15px; }
+        .btn-go { background: var(--hb-red); color: white; padding: 12px; border: none; border-radius: 8px; width: 100%; font-weight: bold; margin-top: 15px; cursor: pointer;}
     </style>
 </head>
 <body>
 
 <div class="container">
     <header>
-        <img src="icon-192.png" alt="Wappen Heimburg" onerror="this.style.display='none'">
+        <img src="icon-192.png" alt="Logo Mangelmelder" onerror="this.style.display='none'">
         <h2>Mangelmelder Heimburg</h2>
     </header>
 
@@ -111,6 +111,7 @@
             <label>Art des Mangels *</label>
             <select id="kategorie" required>
                 <option value="">Bitte wählen...</option>
+                <option>Grünanlagen</option>
                 <option>Straßenbeleuchtung</option>
                 <option>Straßenschäden / Schlagloch</option>
                 <option>Gehwegschäden</option>
@@ -123,7 +124,7 @@
         </div>
 
         <div class="form-group">
-            <label>Straße und ggf. Hausnummer</label>
+            <label>Straße und ggf. Hausnummer des Mangels</label>
             <input type="text" id="strasse">
         </div>
         
@@ -174,9 +175,10 @@
 
 <div id="infoModal" class="modal-overlay">
     <div class="modal-content">
-        <h3 style="color: var(--hb-red);">Fast fertig!</h3>
-        <p>Ihre Daten sind bereit. Bitte hängen Sie im nächsten Schritt Ihre <strong>Fotos in der E-Mail manuell an</strong>.</p>
-        <button id="modalGo" class="btn-go">Verstanden & E-Mail öffnen</button>
+        <h3 style="color: var(--hb-red);">Bereit zum Senden!</h3>
+        <p>Wir haben die E-Mail strukturiert vorbereitet.</p>
+        <p><strong>WICHTIG:</strong> Bitte hänge deine Fotos im nächsten Fenster noch manuell an!</p>
+        <button id="modalGo" class="btn-go">E-Mail jetzt öffnen</button>
     </div>
 </div>
 
@@ -210,13 +212,34 @@
         const empfaenger = "lue-heim@web.de, ortsbuero.heimburg@blankenburg.de";
         const betreff = `Mangel Heimburg: ${d.kat} - ${d.str || d.eck}`;
         
-        let body = `Meldung von: ${d.name}\nKontakt: ${d.email} / ${d.tel}\n\n`;
-        body += `Art des Mangels: ${d.kat}\n`;
-        body += `Ort: ${d.str ? d.str : ''} ${d.eck ? '(Ecke: '+d.eck+')' : ''}\n\n`;
-        body += `Beschreibung:\n${d.besch}\n\n`;
-        body += `Bereits gemeldet: ${d.alt}`;
-        if(d.alt === 'Ja') body += `\nAm: ${d.wann}\nBei: ${d.wem}`;
-        body += `\n\n--- BITTE FOTOS JETZT ANHÄNGEN ---`;
+        // ÜBERSICHTLICHE STRUKTUR FÜR DIE E-MAIL
+        let body = `MANGEL-MELDUNG HEIMBURG\n`;
+        body += `==============================\n\n`;
+        
+        body += `ABSENDER-DATEN:\n`;
+        body += `------------------------------\n`;
+        body += `Name:     ${d.name}\n`;
+        body += `E-Mail:   ${d.email}\n`;
+        body += `Telefon:  ${d.tel || 'Nicht angegeben'}\n\n`;
+        
+        body += `DETAILS ZUM MANGEL:\n`;
+        body += `------------------------------\n`;
+        body += `Kategorie: ${d.kat}\n`;
+        body += `Ort:       ${d.str ? d.str : ''}${d.str && d.eck ? ' / ' : ''}${d.eck ? 'Ecke: '+d.eck : ''}\n`;
+        body += `PLZ/Ort:   38889 Heimburg\n\n`;
+        
+        body += `BESCHREIBUNG:\n`;
+        body += `${d.besch || 'Keine zusätzliche Beschreibung angegeben.'}\n\n`;
+        
+        body += `STATUS:\n`;
+        body += `------------------------------\n`;
+        body += `Bereits gemeldet: ${d.alt}\n`;
+        if(d.alt === 'Ja') {
+            body += `Wann gemeldet:    ${d.wann || 'Kein Datum'}\n`;
+            body += `Wem gemeldet:     ${d.wem || 'Nicht angegeben'}\n`;
+        }
+        
+        body += `\n\n*** BITTE NICHT VERGESSEN: FOTOS ANHÄNGEN! ***\n`;
 
         window.location.href = `mailto:${empfaenger}?subject=${encodeURIComponent(betreff)}&body=${encodeURIComponent(body)}`;
         modal.style.display = 'none';
